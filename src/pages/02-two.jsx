@@ -15,9 +15,12 @@ const DismissableAlert = () => {
   const [state, setState] = useState('idle'); // idle, dismissing, dismissed
 
   useEffect(() => {
+    var timer;
     if (state === 'dismissing') {
-      setTimeout(() => setState('dismissed'), 1500);
+      timer = setTimeout(() => setState('dismissed'), 1500);
     }
+
+    return () => clearTimeout(timer); // Here unsubsribe the timer when unmount
   }, [state]);
 
   return state === 'dismissed' ? null : (
