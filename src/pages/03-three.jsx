@@ -17,9 +17,11 @@ const promotions = [
   { text: 'New Year Discount', done: false },
 ];
 
-const Item = ({ text }) => {
+const Item = ({ text, isReversedAction }) => {
   useEffect(() => {
-    trackImpression(text);
+    if (!isReversedAction) {
+      trackImpression(text);
+    }
   }, []);
 
   return (
@@ -32,6 +34,12 @@ const Item = ({ text }) => {
 const Promotions = () => {
   const [page, setPage] = useState(0);
   const [isReversed, setIsReversed] = useState(false);
+
+  // Here make a hooks to keep track the boolean, whether this rerender is
+  // cause by reorder button or not
+  // then pass it down to Item component
+  // should be like this.
+  const [isReversedAction, setIsReversedAction] = useState(false);
 
   const displayedPromotions = promotions.slice(page * 2, (page + 1) * 2);
 
@@ -48,12 +56,23 @@ const Promotions = () => {
         <button onClick={() => setPage(page + 1)} type="button">
           {'>'}
         </button>
-        <button onClick={() => setIsReversed(!isReversed)}>Reorder</button>
+        <button
+          onClick={() => {
+            setIsReversed(!isReversed);
+            setIsReversedAction(true);
+          }}
+        >
+          Reorder
+        </button>
       </div>
       <ul>
         {(isReversed ? displayedPromotions.reverse() : displayedPromotions).map(
           (promotion, i) => (
-            <Item text={promotion.text} key={i} />
+            <Item
+              text={promotion.text}
+              isReversedAction={isReversedAction}
+              key={i}
+            />
           )
         )}
       </ul>
